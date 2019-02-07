@@ -180,15 +180,15 @@ def search_exact():
     results = []
     os.system('cls' if os.name == 'nt' else 'clear')
     exact_string = input("Enter string to search for: ")
-    try:
-        with open('log.csv', newline='\n') as work_log:
-            log_reader = csv.reader(work_log, delimiter=',')
-            rows = list(log_reader)
-            for row in rows:
-                if exact_string in row[1] or exact_string in row[3]:
-                    results.append(row)
-            return view_results(results)
-    except:
+    with open('log.csv', newline='\n') as work_log:
+        log_reader = csv.reader(work_log, delimiter=',')
+        rows = list(log_reader)
+        for row in rows:
+            if exact_string in row[1] or exact_string in row[3]:
+                results.append(row)
+    if len(results) > 0:
+        return view_results(results)
+    else:
         print("No results found.")
         time.sleep(3)
         return search()
@@ -199,17 +199,17 @@ def search_pattern():
     results = []
     os.system('cls' if os.name == 'nt' else 'clear')
     pattern = input(str("Enter regex pattern to search for: "))
-    try:
-        with open('log.csv', newline='\n') as work_log:
-            log_reader = csv.reader(work_log, delimiter=',')
-            rows = list(log_reader)
-            for row in rows:
-                for item in row:
-                    if len(re.findall(f"{pattern}", item)) > 0:
-                        results.append(row)
-                        break
-            return view_results(results)
-    except:
+    with open('log.csv', newline='\n') as work_log:
+        log_reader = csv.reader(work_log, delimiter=',')
+        rows = list(log_reader)
+        for row in rows:
+            for item in row:
+                if len(re.findall(f"{pattern}", item)) > 0:
+                    results.append(row)
+                    break
+    if len(results) > 0:
+        return view_results(results)
+    else:
         print("No results found.")
         time.sleep(3)
         return search()
@@ -265,7 +265,7 @@ def view_results(results):
         else:
             print("Please enter a valid choice.")
             time.sleep(3)
-            return view_results()
+            return view_results(results)
 
 
 def delete(results, num_count):
@@ -304,16 +304,17 @@ def edit(results, num_count):
                 """))
                 choice = input("> ")
                 if choice == "D":
-                    edit_val = input("Enter new value: ")
-                    try:
-                        edit_val = datetime.datetime.strptime(edit_val,
-                        '%d/%m/%Y')
-                        edit_val = edit_val.strftime("%d/%m/%Y")
-                        row[0] = edit_val
-                    except:
-                        print("Must be in correct DD/MM/YYYY format.")
-                        time.sleep(1)
-                        return edit(results, num_count)
+                    while True:
+                        edit_val = input("Enter new value: ")
+                        try:
+                            edit_val = datetime.datetime.strptime(edit_val,
+                            '%d/%m/%Y')
+                            edit_val = edit_val.strftime("%d/%m/%Y")
+                        except:
+                            print("Must be in correct DD/MM/YYYY format.")
+                        else:
+                            break
+                    row[0] = edit_val
                 elif choice == "T":
                     edit_val = input("Enter new value: ")
                     row[1] = edit_val
