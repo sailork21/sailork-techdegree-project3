@@ -2,6 +2,7 @@ import csv
 import datetime
 import os
 import re
+import sys
 import time
 from textwrap import dedent
 
@@ -23,7 +24,7 @@ def main():
         return search()
     elif choice == "c":
         print("Thanks for using WORK LOG!")
-        exit()
+        sys.exit()
     else:
         print("Please enter a, b or c.")
         time.sleep(3)
@@ -109,16 +110,16 @@ def search_date_exact():
         exact_date_test = datetime.datetime.strptime(exact_date, '%d/%m/%Y')
     except:
         print("Must be in correct DD/MM/YYYY format.")
-        return add()
-    try:
-        with open('log.csv', newline='\n') as work_log:
-            log_reader = csv.reader(work_log, delimiter=',')
-            rows = list(log_reader)
-            for row in rows:
-                if row[0] == exact_date:
-                    results.append(row)
-            return view_results(results)
-    except:
+        return search_date_exact()
+    with open('log.csv', newline='\n') as work_log:
+        log_reader = csv.reader(work_log, delimiter=',')
+        rows = list(log_reader)
+        for row in rows:
+            if row[0] == exact_date:
+                results.append(row)
+    if len(results) > 0:
+        return view_results(results)
+    else:
         print("No results found.")
         time.sleep(3)
         return search()
@@ -132,20 +133,24 @@ def search_date_range():
     end_date = input("Enter end date to search (DD/MM/YYYY): ")
     try:
         start_date_test = datetime.datetime.strptime(start_date, '%d/%m/%Y')
+        start_date_ts = start_date_test.timestamp()
         end_date_test = datetime.datetime.strptime(end_date, '%d/%m/%Y')
+        end_date_ts = end_date_test.timestamp()
     except:
         print("Must be in correct DD/MM/YYYY format.")
-        return add()
+        return search_date_range()
 
-    try:
-        with open('log.csv', newline='\n') as work_log:
-            log_reader = csv.reader(work_log, delimiter=',')
-            rows = list(log_reader)
-            for row in rows:
-                if row[0] <= end_date and row[0] >= start_date:
-                    results.append(row)
-            return view_results(results)
-    except:
+    with open('log.csv', newline='\n') as work_log:
+        log_reader = csv.reader(work_log, delimiter=',')
+        rows = list(log_reader)
+        for row in rows:
+            entry_date = datetime.datetime.strptime(row[0], '%d/%m/%Y')
+            entry_date_ts = entry_date.timestamp()
+            if entry_date_ts <= end_date_ts and entry_date_ts >= start_date_ts:
+                results.append(row)
+    if len(results) > 0:
+        return view_results(results)
+    else:
         print("No results found.")
         time.sleep(3)
         return search()
@@ -156,15 +161,15 @@ def search_time_spent():
     results = []
     os.system('cls' if os.name == 'nt' else 'clear')
     duration = input("Enter duration to search for: ")
-    try:
-        with open('log.csv', newline='\n') as work_log:
-            log_reader = csv.reader(work_log, delimiter=',')
-            rows = list(log_reader)
-            for row in rows:
-                if row[2] == duration:
-                    results.append(row)
-            return view_results(results)
-    except:
+    with open('log.csv', newline='\n') as work_log:
+        log_reader = csv.reader(work_log, delimiter=',')
+        rows = list(log_reader)
+        for row in rows:
+            if row[2] == duration:
+                results.append(row)
+    if len(results) > 0:
+        return view_results(results)
+    else:
         print("No results found.")
         time.sleep(3)
         return search()
