@@ -281,10 +281,13 @@ def delete(results, num_count):
         entrywriter = csv.writer(csvfile)
         for row in rows:
             entrywriter.writerow(row)
+    print("Entry deleted!")
+    time.sleep(2)
     return search()
 
 def edit(results, num_count):
     """ Prompts user what part of the entry to edit, edits CSV file """
+    os.system('cls' if os.name == 'nt' else 'clear')
     with open('log.csv', newline='\n') as csvfile:
         log_reader = csv.reader(csvfile, delimiter=',')
         rows = list(log_reader)
@@ -309,6 +312,7 @@ def edit(results, num_count):
                         row[0] = edit_val
                     except:
                         print("Must be in correct DD/MM/YYYY format.")
+                        time.sleep(1)
                         return edit(results, num_count)
                 elif choice == "T":
                     edit_val = input("Enter new value: ")
@@ -324,13 +328,14 @@ def edit(results, num_count):
                                 print(f"Whoops! {err}")
                         else:
                             break
+                    row[2] = duration
                 elif choice == "N":
                     edit_val = input("Enter new value: ")
                     row[3] = edit_val
                 else:
                     print("Please enter a valid choice.")
-                    time.sleep(3)
-                    return edit()
+                    time.sleep(1)
+                    return edit(results, num_count)
 
     with open('log.csv', 'w') as csvfile:
         entrywriter = csv.writer(csvfile)
