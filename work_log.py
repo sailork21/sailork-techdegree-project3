@@ -21,6 +21,13 @@ def main():
     if choice == "a":
         return add()
     elif choice == "b":
+        try:
+            with open('log.csv', newline='\n') as work_log:
+                log_reader = csv.reader(work_log, delimiter=',')
+        except:
+            print("No entries to search. Add entries.")
+            time.sleep(2)
+            return main()
         return search()
     elif choice == "c":
         print("Thanks for using WORK LOG!")
@@ -252,9 +259,9 @@ def view_results(results):
                 (p)revious (n)ext (e)dit (d)elete (r)eturn to menu
                 """))
         choice = input("> ")
-        if choice == "p":
+        if choice == "p" and num_count != 0:
             num_count -= 1
-        elif choice == "n":
+        elif choice == "n" and num_count+1 != num_results:
             num_count += 1
         elif choice == "e":
             return edit(results, num_count)
